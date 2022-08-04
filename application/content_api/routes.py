@@ -4,34 +4,51 @@ from ..models import Content,Serial,Serial_episode
 from  flask import jsonify,request,abort
 import re
 
-@content_api_blueprint.route('/api/content',methods=['GET'])
-def content():
-    content = []
-    for row in Content.query.all():
-        print(row)
-        #content.append(row.to_json())
-    response = jsonify({'result': 'content'})
-    return response
+
 
 @content_api_blueprint.route('/api/content/add', methods =['POST'])
 def add_content():
 
-    request_data = request.get_json()
-    title = (request_data['title']).strip()
-    type_cotent = (request_data['type']).strip()
-    standard_title = normalize(title)
+    title = None
+    type_content = None
     season = None
     episode = None
 
+    request_data = request.get_json()
+
     if request_data:
-        if 'season' in request_data:
-            season = int(request_data['season'])
-        if 'episode' in request_data:
-            episode = int(request_data['episode'])
 
+        if 'title' in request_data:
+            title = request_data['title']
+        else:
+            abort(400,'Se requiere el campo: title')
 
-    if type_cotent == "UNICO":
+        if 'type_content' in request_data:
+            type_content = request_data['type_content']
+        else:
+            abort(400,'Se requiere el campo: type_content')
+
+        if type_content == "SERIE":
+            if 'season' in request_data:
+                season = int(request_data['season'])
+            else:
+                abort(400,"el programa es tipo SERIE se requiere el campo season")
+
+            if 'episode' in request_data:
+                episode = int(request_data['episode'])
+            else:
+                abort(400, "el programa es tipo SERIE se requiere el campo episode")
+
+    if type_content != "UNICO":
+        if type_content != "SERIE":
+            abort(400,f"el tipo de contenido {type_content} no existe debe ser UNICO o SERIE ")
+
+    standard_title = normalize(title)
+
+    if type_content == "UNICO":
+
         exists = db.session.query(Content.id).filter_by(standard_title=standard_title).first() is not None
+
         if(exists == False):
             content = Content()
             content.title = title
@@ -42,9 +59,7 @@ def add_content():
         else:
             return "Ya se encuentra registrado"
 
-    if type_cotent == "SERIE":
-        if season == None or episode == None:
-            return 'El programa es tipo Serie, Suministra la season y el episode'
+    if type_content == "SERIE":
 
         title2 = title+'-'+str(season)+'-'+str(episode)
         standard_title2 = normalize(title2)
@@ -82,13 +97,16 @@ def add_content():
             db.session.commit()
             return "Se creo serial_episode"
 
-    return "Error verifica el tipo de programa"
+    return abort(400,"Error")
 
 
 @content_api_blueprint.route('/api/content/id/<id>',methods=['GET'])
 def id_content(id):
 
     content_id = db.session.query(Content).filter(Content.id == id).first()
+
+    if content_id is None:
+        abort(400,"No se encontro ningun dato")
     dic_response  = {
         "title": content_id.title,
         "standard_title": content_id.standard_title
@@ -101,12 +119,12 @@ def id_content(id):
 def title_content(title):
 
     standard_title = normalize(title)
-    print(standard_title)
+
     content_title = db.session.query(Content).filter(Content.standard_title == standard_title).first()
-    print(content_title)
+    if content_title is None:
+        abort(400,"No se encontro ningun dato")
     dic_response  = {
         "title": content_title.title,
-        "synopsis": content_title.synopsis,
         "standard_title": content_title.standard_title
     }
 
