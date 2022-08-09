@@ -1,0 +1,25 @@
+//Comando para ejecutar el archivo llamado Dockerfile para crear la imagen
+
+1.docker build -t ms-content {} ({} ruta en donde esta el archivo)
+
+//Comando para ejecutar el archivo docker-compose.yml para crear los contenedores
+
+2.docker compose up 
+
+//Comandos para desplegar las migraciones
+
+flask db init
+flask db migrate
+flask db upgrade
+
+//comando para desplegar el ms-content
+
+python run.py
+
+//como cambiar de entorno
+
+en el archivo .env reemplazar en "config.{}" ({} nombre de la clase que esta en el archivo config.py, cada clase tiene la configuracion del entorno).
+
+//comando para ejecutar las prueba unitarias (entorno testing)
+
+python -m unittest

@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  ms-content:
+    image: ms-content
+    container_name: "ms-content"
+    stdin_open: true
+    tty: true
+    ports:
+      - "7001:7001"
+    volumes:
+      - "C:/Users/edwar/workspace/siba/Ms-Content:/Ms-Contenido-STD"
+    depends_on:
+      - "ms-content-db"
+    links:
+      - "ms-content-db:mysql"
+  ms-content-db:
+    image: mysql:5.5
+    container_name: "ms-content-db"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=49421702"
+    volumes:
+      - "C:/Users/edwar/workspace/siba/mysql-ms-content:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+  ms-content-phpmia:
+    container_name: "ms-content-phpmia"
+    image: "phpmyadmin/phpmyadmin"
+    environment:
+      - "PMA_HOST=ms-content-db"
+    ports:
+      - "8090:80"
+    depends_on:
+      - "ms-content-db"
+    links:
+      - "ms-content-db"

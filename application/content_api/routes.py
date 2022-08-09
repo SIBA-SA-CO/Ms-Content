@@ -19,7 +19,7 @@ def add_content():
     if request_data:
 
         if 'title' in request_data:
-            title = request_data['title']
+            title = request_data['title'].strip()
         else:
             abort(400,'Se requiere el campo: title')
 
@@ -118,7 +118,7 @@ def id_content(id):
 @content_api_blueprint.route('/api/content/title/<title>',methods=['GET'])
 def title_content(title):
 
-    standard_title = normalize(title)
+    standard_title = normalize(title.strip())
 
     content_title = db.session.query(Content).filter(Content.standard_title == standard_title).first()
     if content_title is None:

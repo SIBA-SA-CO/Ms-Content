@@ -12,13 +12,13 @@ class Config:
 class DevelopmentConfig(Config):
     ENV = "development"
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI= "mysql+pymysql://root:49421702@localhost:3306/ms-content-db"
+    SQLALCHEMY_DATABASE_URI= "mysql+pymysql://root:49421702@ms-content-db/ms-content-db"
 
 class TestingConfig(Config):
     ENV = "testing"
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI= "mysql+pymysql://root:49421702@localhost:3306/ms-content-db-test"
+    SQLALCHEMY_DATABASE_URI= "mysql+pymysql://root:49421702@ms-content-db/ms-content-db-test"
 
 
 class ProductionConfig(Config):
